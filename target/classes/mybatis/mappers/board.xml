@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="mapper.board">
+	<resultMap type="BoardDTO" id="dto">
+		<result property="mem_num" column="mem_num"/>
+		<result property="mem_name" column="mem_name"/>
+		<result property="mem_phone" column="mem_phone"/>
+		<result property="mem_rank" column="mem_rank"/>
+		<result property="mem_email" column="mem_email"/>
+	</resultMap>
+	
+	<select id="select" resultMap="dto">
+		<![CDATA[
+			select mem_num, mem_name, mem_phone, mem_rank, mem_email
+			from com_member
+			order by mem_name
+		]]>
+	</select>
+	
+	<select id="search" resultMap="dto" parameterType="java.util.Map">
+			select mem_num, mem_name, mem_phone, mem_rank, mem_email
+			from com_member
+			<choose>
+				<when test='category == "num"'>
+					where mem_num = #{keyword}
+				</when>
+				<when test='category == "name"'>
+					where mem_name like '%'||#{keyword}||'%'
+				</when>
+				<when test='category == "phone"'>
+					where mem_phone = '%'||#{keyword}||'%'
+				</when>
+				<when test='category == "rank"'>
+					<choose>
+						<when test='keyword  == "인턴"'>
+							where mem_rank = 0
+						</when>
+						<when test='keyword  == "사원"'>
+							where mem_rank = 1
+						</when>
+						<when test='keyword  == "대리"'>
+							where mem_rank = 2
+						</when>
+						<when test='keyword  == "과장"'>
+							where mem_rank = 3
+						</when>
+						<when test='keyword  == "차장"'>
+							where mem_rank = 4
+						</when>
+						<when test='keyword  == "부장"'>
+							where mem_rank = 5
+						</when>
+					</choose>
+				</when>
+				<when test='category == "email"'>
+					where mem_email = '%'||#{keyword}||'%'
+				</when>
+			</choose>
+			order by mem_name
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		<![CDATA[
+			insert into com_member values(#{mem_num},#{mem_name},#{mem_phone},#{mem_rank},#{mem_email})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		<![CDATA[
+			update com_member set mem_num = #{mem_num},mem_name = #{mem_name},mem_phone = #{mem_phone},mem_rank = #{mem_rank},mem_eamil = #{mem_email})
+		]]>
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		<![CDATA[
+			delete from com_member where mem_num = #{mem_num}
+		]]>
+	</delete>
+</mapper>
